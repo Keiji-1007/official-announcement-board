@@ -14,32 +14,95 @@ function normalizeLines(text) {
 }
 
 function inferAgency(text) {
-  const agencyPattern = /(こども家庭庁|文部科学省|厚生労働省|農林水産省|経済産業省|国土交通省|内閣官房|デジタル庁|消費者庁|総務省|外務省|財務省|防衛省|環境省|金融庁|復興庁|関係府省|内閣府|政府|内閣|[一-龥々]+省|[一-龥々]+庁|[一-龥々]+委員会|委員会)/g;
+  const agencyPattern = /(こども家庭庁|文部科学省|厚生労働省|農林水産省|経済産業省|国土交通省|内閣官房|デジタル庁|消費者庁|総務省|外務省|財務省|防衛省|環境省|金融庁|復興庁|関係府省|内閣府|[一-龥々]+省|[一-龥々]+庁|[一-龥々]+委員会|[一-龥々]+本部|[一-龥々]+局)/g;
   const matched = text.match(agencyPattern) || [];
+  const generalWords = new Set(['政府', '内閣', '関係府省']);
+  const filtered = matched.filter((name) => !generalWords.has(name));
 
-  if (matched.length === 0) {
+  if (filtered.length === 0) {
     return '不明';
   }
 
-  return [...new Set(matched)].join('、');
+  return [...new Set(filtered)].join('、');
+}
+
+function parseSections(text) {
+  const lines = normalizeLines(text);
+  const sectionNames = new Set(['国会提出案件', '公布（法律）', '政令', '人事', '配布']);
+  const sections = [];
+  let currentSection = null;
+
+  lines.forEach((line) => {
+    const lineBody = line.replace(/^・+\s*/, '').trim();
+    if (!lineBody) {
+      return;
+    }
+
+    if (sectionNames.has(lineBody)) {
+      currentSection = { heading: lineBody, items: [] };
+      sections.push(currentSection);
+      return;
+    }
+
+    if (!currentSection) {
+      currentSection = { heading: 'その他', items: [] };
+      sections.push(currentSection);
+    }
+
+    if (/^（[^）]+）$/.test(lineBody) && currentSection.items.length > 0) {
+      const lastIndex = currentSection.items.length - 1;
+      currentSection.items[lastIndex] = `${currentSection.items[lastIndex]}${lineBody}`;
+      return;
+    }
+
+    currentSection.items.push(lineBody);
+  });
+
+  return sections;
 }
 
 function collectDecisionItems(text) {
-  const body = text.trim();
-  if (!body) {
-    return ['- 不明'];
+  const sections = parseSections(text);
+  if (sections.length === 0) {
+    return ['・不明'];
   }
-  return [`- ${body}`];
+
+  const result = [];
+  sections.forEach((section) => {
+    result.push(`・${section.heading}`);
+    if (section.items.length === 0) {
+      result.push('・不明');
+      return;
+    }
+    section.items.forEach((item) => result.push(`・${item}`));
+    result.push('');
+  });
+
+  if (result[result.length - 1] === '') {
+    result.pop();
+  }
+
+  return result;
 }
 
 function organizeContent(text) {
-  const lines = normalizeLines(text);
+  const sections = parseSections(text);
 
-  if (lines.length === 0) {
-    return ['- 不明'];
+  if (sections.length === 0) {
+    return ['・不明'];
   }
 
-  return lines.slice(0, 10).map((line) => `- ${line}`);
+  const result = [];
+  sections.forEach((section) => {
+    result.push(`・${section.heading}`);
+    if (section.items.length === 0) {
+      result.push('・不明');
+      return;
+    }
+    section.items.forEach((item) => result.push(`・${item}`));
+  });
+
+  return result;
 }
 
 function mediaNameFromUrl(url) {
