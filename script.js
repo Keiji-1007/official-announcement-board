@@ -14,7 +14,7 @@ function normalizeLines(text) {
 }
 
 function inferAgency(text) {
-  const agencyPattern = /(こども家庭庁|文部科学省|厚生労働省|農林水産省|経済産業省|国土交通省|内閣官房|デジタル庁|消費者庁|総務省|外務省|財務省|防衛省|環境省|金融庁|復興庁|関係府省|内閣府|[一-龥々]+省|[一-龥々]+庁|[一-龥々]+委員会|[一-龥々]+本部|[一-龥々]+局)/g;
+  const agencyPattern = /(こども家庭庁|文部科学省|厚生労働省|農林水産省|経済産業省|国土交通省|内閣官房|デジタル庁|消費者庁|総務省|外務省|財務省|防衛省|環境省|金融庁|復興庁|内閣府|[一-龥々]+省|[一-龥々]+庁|[一-龥々]+委員会|[一-龥々]+本部|[一-龥々]+局)/g;
   const matched = text.match(agencyPattern) || [];
   const generalWords = new Set(['政府', '内閣', '関係府省']);
   const filtered = matched.filter((name) => !generalWords.has(name));
@@ -64,43 +64,23 @@ function parseSections(text) {
 function collectDecisionItems(text) {
   const sections = parseSections(text);
   if (sections.length === 0) {
-    return ['・不明'];
+    return ['不明'];
   }
 
   const result = [];
   sections.forEach((section) => {
-    result.push(`・${section.heading}`);
+    result.push(section.heading);
     if (section.items.length === 0) {
       result.push('・不明');
-      return;
+    } else {
+      section.items.forEach((item) => result.push(`・${item}`));
     }
-    section.items.forEach((item) => result.push(`・${item}`));
     result.push('');
   });
 
   if (result[result.length - 1] === '') {
     result.pop();
   }
-
-  return result;
-}
-
-function organizeContent(text) {
-  const sections = parseSections(text);
-
-  if (sections.length === 0) {
-    return ['・不明'];
-  }
-
-  const result = [];
-  sections.forEach((section) => {
-    result.push(`・${section.heading}`);
-    if (section.items.length === 0) {
-      result.push('・不明');
-      return;
-    }
-    section.items.forEach((item) => result.push(`・${item}`));
-  });
 
   return result;
 }
@@ -122,7 +102,6 @@ function formatArticle() {
 
   const decisions = collectDecisionItems(body).join('\n');
   const agency = inferAgency(body);
-  const organized = organizeContent(body).join('\n');
   const mediaName = mediaNameFromUrl(sourceUrl);
 
   const noteTitle = `【公式発表】${title}`;
@@ -151,9 +130,6 @@ function formatArticle() {
     '',
     `所管または関係機関`,
     `${agency}`,
-    '',
-    `本文に書かれている範囲での内容整理`,
-    `${organized}`,
     '',
     `出典URL一覧`,
     `- ${mediaName} ${sourceUrl}`,
