@@ -1,0 +1,145 @@
+:root {
+  --bg: #05070a;
+  --panel: #11151d;
+  --panel-border: #283242;
+  --text: #e8edf5;
+  --muted: #a5b0bf;
+  --accent: #5ca8ff;
+  --accent-hover: #4a95eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-header h1 {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+label {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+input,
+textarea,
+button {
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+input,
+textarea {
+  background: #0c1118;
+  color: var(--text);
+  border: 1px solid #334055;
+  padding: 12px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.primary-btn,
+.secondary-btn {
+  border: none;
+  cursor: pointer;
+  padding: 12px 14px;
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.primary-btn {
+  margin-top: 14px;
+  background: var(--accent);
+}
+
+.primary-btn:hover {
+  background: var(--accent-hover);
+}
+
+.secondary-btn {
+  width: auto;
+  background: #3e4c63;
+}
+
+.secondary-btn:hover {
+  background: #4c5f7a;
+}
+
+.output-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#output {
+  min-height: 360px;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 14px;
+  }
+
+  .page-header h1 {
+    font-size: 1.45rem;
+  }
+
+  input,
+  textarea,
+  button {
+    font-size: 0.98rem;
+  }
+
+  #output {
+    min-height: 420px;
+  }
+}

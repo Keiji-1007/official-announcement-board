@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>公式発表ボード</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="page-header">
+      <h1>公式発表ボード</h1>
+      <p>政府・国会・官公庁などの公式発表を、解説や意見を加えず記事形式で整理します。</p>
+    </header>
+
+    <section class="panel input-panel">
+      <h2>入力</h2>
+      <div class="form-grid">
+        <label for="announcementTitle">公式発表タイトル</label>
+        <input id="announcementTitle" type="text" placeholder="例: ○○省 ○○に関する発表" />
+
+        <label for="announcementDate">発表日</label>
+        <input id="announcementDate" type="date" />
+
+        <label for="sourceUrl">出典URL</label>
+        <input id="sourceUrl" type="url" placeholder="https://example.go.jp/..." />
+
+        <label for="announcementBody">公式発表本文</label>
+        <textarea id="announcementBody" rows="16" placeholder="公式発表の本文を貼り付けてください"></textarea>
+      </div>
+      <button id="formatButton" class="primary-btn" type="button">記事形式に整える</button>
+    </section>
+
+    <section class="panel output-panel">
+      <div class="output-head">
+        <h2>出力</h2>
+        <button id="copyButton" class="secondary-btn" type="button">コピー</button>
+      </div>
+      <textarea id="output" rows="24" readonly placeholder="ここに整形結果が表示されます"></textarea>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
