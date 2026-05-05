@@ -14,41 +14,22 @@ function normalizeLines(text) {
 }
 
 function inferAgency(text) {
-  const keywords = [
-    '内閣', '首相官邸', '衆議院', '参議院', '国会', '省', '庁', '委員会', '都', '道', '府', '県', '市', '区', '町', '村', '裁判所'
-  ];
+  const agencyPattern = /(こども家庭庁|文部科学省|厚生労働省|農林水産省|経済産業省|国土交通省|内閣官房|デジタル庁|消費者庁|総務省|外務省|財務省|防衛省|環境省|金融庁|復興庁|関係府省|内閣府|政府|内閣|[一-龥々]+省|[一-龥々]+庁|[一-龥々]+委員会|委員会)/g;
+  const matched = text.match(agencyPattern) || [];
 
-  const lines = normalizeLines(text);
-  for (const line of lines) {
-    for (const keyword of keywords) {
-      if (line.includes(keyword)) {
-        return line.length > 80 ? `${line.slice(0, 80)}...` : line;
-      }
-    }
+  if (matched.length === 0) {
+    return '不明';
   }
 
-  return '不明';
+  return [...new Set(matched)].join('、');
 }
 
 function collectDecisionItems(text) {
-  const lines = normalizeLines(text);
-  const markers = ['決定', '決議', '承認', '施行', '公布', '発表', '公表', '開始', '改正', '成立'];
-  const picked = [];
-
-  for (const line of lines) {
-    if (markers.some((marker) => line.includes(marker))) {
-      picked.push(`- ${line}`);
-    }
-    if (picked.length >= 6) {
-      break;
-    }
-  }
-
-  if (picked.length === 0) {
+  const body = text.trim();
+  if (!body) {
     return ['- 不明'];
   }
-
-  return picked;
+  return [`- ${body}`];
 }
 
 function organizeContent(text) {
